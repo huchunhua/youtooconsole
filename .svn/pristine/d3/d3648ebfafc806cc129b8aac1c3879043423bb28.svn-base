@@ -1,0 +1,186 @@
+<template>
+    <div class="designer-uploader-container">
+        <div class="uploader-header">
+            <a-alert :message="'当前组件最大子项('+maxNum+'个)已满'" banner v-if="maxNum <= dataList.length"/>
+            <a-button type="dashed" style="width: 100%" @click="onModalShow"
+                      v-if="maxNum > dataList.length">
+                <a-icon type="plus"/>
+                添加一项
+            </a-button>
+        </div>
+        <div class="uploader-body">
+                <div class="data-list">
+                    <a-card class="data-item" hoverable v-for="(item,index) in dataList" :key="index">
+                        <img :src="item.imageUrl" slot="cover"/>
+                        <template class="ant-card-actions" slot="actions">
+                            <a-tag :color="item.urlType == 'inside' ? 'blue' : 'orange'">{{item.urlType == 'inside' ? '内链' : '外链'}}</a-tag>
+                            <span style="color: #108ee9" @click="onItemEdit(index)"><a-icon type="edit"/>编辑</span>
+                            <span style="color: red" @click="onItemDel(index)"><a-icon type="delete"/>删除</span>
+                        </template>
+                        <a-card-meta :description="item.urlText"/>
+                    </a-card>
+                </div>
+        </div>
+        <div class="uploader-modal">
+            <a-modal ref="refModal" class="designer-modal" title="数据编辑" v-model="modalIsVisible"
+                     :bodyStyle="{padding:'20px'}" :width="762" :maskClosable="false" :destroyOnClose="true" okText="保存"
+                     cancelText="取消" :closable="false" @ok="onModalSubmit">
+                <a-upload class="designer-uploader" name="imgFile" listType="picture-card" :showUploadList="false"
+                          action="http://sichuan.95504.net/v4/common/upload/upload" :beforeUpload="beforeUpload"
+                          @change="onUploaderChange">
+                    <img v-if="dataTemp.imageUrl" :src="dataTemp.imageUrl" width="720" height="288"/>
+                    <div v-else>
+                        <a-icon :type="editorActionLoading ? 'loading' : 'plus'"/>
+                        <div class="ant-upload-text">上传图片</div>
+                    </div>
+                </a-upload>
+                <a-form-item label="跳转地址">
+                    <a-input-group compact>
+                        <a-input style="width: 90%" placeholder="请填写跳转地址" v-model="dataTemp.urlText"/>
+                        <a-select style="width: 10%" defaultValue="inside" v-model="dataTemp.urlType">
+                            <a-select-option value="inside">内链</a-select-option>
+                            <a-select-option value="outside">外链</a-select-option>
+                        </a-select>
+                    </a-input-group>
+                </a-form-item>
+            </a-modal>
+        </div>
+    </div>
+</template>
+a
+<script>
+    export default {
+        name: "upload",
+        props: {
+            minNum: {
+                type: Number | String,
+                default: 1
+            },
+            maxNum: {
+                type: Number | String,
+                required: true
+            },
+            datas: Object
+        },
+        watch: {
+          datas(val,old) {
+             if(val.upload){
+                 this.dataList = val.upload;
+             }else{
+                 this.dataList = [];
+             }
+          }
+        },
+        data() {
+            return {
+                modalIsVisible: false,
+                modalIsEdit: false,
+                modalIsEditIndex: null,
+                editorActionLoading: false,
+                dataIndex: 0,
+                dataList: [],
+                dataTemp: {imageUrl: '', urlText: '', urlType: 'inside'}
+            }
+        },
+        methods: {
+            onModalShow() {
+                this.modalIsVisible = true;
+                this.modalIsEdit = false;
+                this.modalIsEditIndex = null;
+                this.dataTemp = {imageUrl: '', urlText: '', urlType: 'inside'};
+            },
+            onModalSubmit(e) {
+                if (!this.dataTemp.imageUrl) {
+                    this.$message.error('请上传图片');
+                    return;
+                }
+                if (!this.dataTemp.urlText) {
+                    this.$message.error('请填写网址，不跳转请填写符号: #');
+                    return;
+                }
+                if(this.modalIsEdit){
+                    this.dataList[this.modalIsEditIndex] = this.dataTemp;
+                }else{
+                    this.dataList.push(this.dataTemp);
+                }
+                this.dataIndex++;
+                this.dataTemp = {imageUrl: '', urlText: '', urlType: 'inside'};
+                this.modalIsVisible = false;
+                this.modalIsEdit = false;
+                this.modalIsEditIndex = null;
+            },
+            onUploaderChange(info) {
+                if (info.file.status === 'uploading') {
+                    this.editorActionLoading = true;
+                    return
+                }
+                if (info.file.status === 'done') {
+                    this.dataTemp.imageUrl = info.file.response.data.path;
+                    this.editorActionLoading = false;
+                }
+            },
+            beforeUpload(file) {
+                const isJPG = file.type === 'image/jpeg' || file.type === 'image/png';
+                if (!isJPG) {
+                    this.$message.error('仅允许上传图片文件');
+                    return false;
+                }
+                const isLt2M = file.size / 1024 / 1024 < 2;
+                if (!isLt2M) {
+                    this.$message.error('文件大小不得超过2MB');
+                    return false;
+                }
+                return isJPG && isLt2M
+            },
+            onItemEdit(index){
+                this.modalIsEdit = true;
+                this.modalIsEditIndex = index;
+                this.modalIsVisible = true;
+                this.dataTemp = this.dataList[index];
+            },
+            onItemDel(index){
+                this.dataList.splice(index,1);
+            },
+            getFieldData(){
+                let datas = [];
+                if(this.dataList.length > 0){
+                    this.dataList.map(function (item) {
+                        datas.push(item)
+                    })
+                }
+                return datas;
+            }
+        }
+    }
+</script>
+
+<style scoped>
+    .designer-uploader-container {
+        padding: 10px;
+        height: 100%;
+        position: relative;
+    }
+
+    .uploader-header {
+    }
+
+    .designer-uploader-container .uploader-body {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        top: 42px;
+    }
+    .designer-uploader-container .uploader-body .data-list {
+        padding: 10px;
+    }
+    .designer-uploader-container .uploader-body .data-item {
+        border: 1px dashed #007dff;
+        width: 100%;
+        padding: 4px;
+        margin-bottom: 10px;
+    }
+    .designer-uploader-container .uploader-body .data-item:last-child {
+        margin-bottom: 0;
+    }
+</style>

@@ -1,0 +1,171 @@
+<template>
+    <div>
+        <div class='margin-bottom'>
+            <a-select defaultValue="日结时间" style="width: 120px" @change="handleChange">
+              <a-select-option value="日结时间">日结时间</a-select-option>
+              <a-select-option value="自然时间">自然时间</a-select-option>
+            </a-select>
+            <a-range-picker style="margin-right:20px">
+              <template slot="dateRender" slot-scope="current">
+                <div class="ant-calendar-date" :style="getCurrentStyle(current)">
+                  {{current.date()}}
+                </div>
+              </template>
+            </a-range-picker>
+            选择公司：
+            <a-select v-model="companyData[0]" style="width: 120px">
+                <a-select-option v-for="company in companyData" :key="company">{{company}}</a-select-option>
+            </a-select>
+            <a-button type="primary" style="margin:0 20px">确定</a-button>
+            <a-button type="primary">导出</a-button>
+        </div>
+        <a-table :columns="columns" :dataSource="data" bordered :pagination=false>
+          <span slot="actions" slot-scope="text, record">
+            <a-tooltip placement="top">
+              <template slot="title">
+                <span>查看</span>
+              </template>
+              <a-icon type="form"  @click="getDetail(record.id)"/>
+            </a-tooltip> 
+          </span>
+        </a-table>
+        <template>
+          <a-pagination :current="current" :total="pagenum" @change="onChange"/>
+        </template> 
+    </div>
+</template>
+<script>
+    const companyData = ['油品', '非油'];
+    const columns = [
+        {
+          title: '分公司支付方式',
+          children:[{
+            title:'片区',
+            dataIndex:'area'
+          },
+          {
+            title:'片区编码',
+            dataIndex:'areacode'            
+          },
+          {
+            title:'加管编码',
+            dataIndex:'code'
+          },
+          {
+            title:'站点',
+            dataIndex:'station'
+          },
+          {
+            title:'总金额',
+            dataIndex:'sell'
+          },
+          {
+            title: '微信',
+            children: [{
+              title: '总金额',
+              dataIndex: 'companyAddress',
+              key: 'companyAddress',
+            }, {
+              title: '手续费',
+              dataIndex: 'companyName',
+              key: 'companyName',
+            },{
+              title: '净金额',
+              dataIndex: 'companyName',
+              key: 'companyName',            
+            }],
+          },
+          {
+            title: '支付宝',
+            children: [{
+              title: '总金额',
+              dataIndex: 'companyAddress',
+              key: 'companyAddress',
+            }, {
+              title: '手续费',
+              dataIndex: 'companyName',
+              key: 'companyName',
+            },{
+              title: '净金额',
+              dataIndex: 'companyName',
+              key: 'companyName',            
+            }],
+          },
+          {
+            title: '翼支付',
+            children: [{
+              title: '总金额',
+              dataIndex: 'companyAddress',
+              key: 'companyAddress',
+            }, {
+              title: '手续费',
+              dataIndex: 'companyName',
+              key: 'companyName',
+            },{
+              title: '净金额',
+              dataIndex: 'companyName',
+              key: 'companyName',            
+            }],
+          },
+          {
+            title:'电子券',
+            dataIndex:'sell'
+          },
+          {
+            title:'净金额',
+            dataIndex:'sell'
+          },
+          {
+              title: '操作',
+              key: 'actions',
+              dataIndex: 'actions',
+              scopedSlots: { customRender: 'actions' },
+          }]
+        }];
+    const data = [
+        {
+            id:"MV12C",
+            area:'青羊',
+            num:'MV12',
+            name:'青羊加油站',
+            sellall:10000.00,
+            couponall:200.00,
+            payall:9800.00,
+            oil:8000.00,
+            coupon:150.00,
+            a:7850.00,
+            b:2000.00,
+            c:50.00,
+            d:1950.00
+        }
+    ]
+    export default {
+        data() {
+            return {
+                companyData,
+                data:data,
+                columns,
+                pagenum:'',
+                current:1
+            }
+        },
+        methods: {
+            getCurrentStyle (current, today) {
+              const style = {}
+              if (current.date() === 1) {
+                style.border = '1px solid #1890ff'
+                style.borderRadius = '50%'
+              }
+              return style
+            },
+            handleChange(value) {
+              console.log(`selected ${value}`);
+            }
+        }
+    }
+</script>
+<style scoped>
+.margin-bottom{
+  margin-bottom: 30px;
+}
+</style>

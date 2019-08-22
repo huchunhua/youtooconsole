@@ -1,0 +1,497 @@
+<template>
+    <div class="page-designer">
+        <div class="designer-workspace">
+            <div class="designer-col col-left" v-if="isDesignerMode">
+                <div class="col-title">
+                    <span>组件列表</span>
+                </div>
+                <div class="designer-widget">
+                    <a-collapse defaultActiveKey="Basic" :bordered="false">
+                        <a-collapse-panel :header="depositoryWidgetCategory[widgetGroupName]" :key="widgetGroupName"
+                                          v-for="(widgetGroup,widgetGroupName) in depositoryWidgetList">
+                            <div class="widget-item" :key="widgetItem.name" v-for="widgetItem in widgetGroup"
+                                 @click="onAddWidgetToDesigner(widgetItem)">
+                                <a-tooltip placement="right" title="点击可添加到设计器">
+                                    <img :src="widgetItem.preview"/>
+                                </a-tooltip>
+                                <span>{{widgetItem.title}}</span>
+                            </div>
+                        </a-collapse-panel>
+                    </a-collapse>
+                </div>
+            </div>
+            <div class="designer-col col-middle">
+                <div class="col-middle-content">
+                    <div class="col-title">
+                        <span>首页</span>
+                        <span style="color:#999" v-if="!isDesignerMode">已锁定</span>
+                        <span style="color:#FF6400;font-size:18px;margin-right: 0;padding-right: 0" v-if="isDesignerMode" @click="onPageConfigMode"><a-icon type="setting" /></span>
+                    </div>
+                    <div class="page-preview" ref="pagePreview" :style="{backgroundColor:pageConfig.bgColor,backgroundImage:'url('+pageConfig.bgImage+')'}">
+                        <vuescroll :ops="vueScrollOps">
+                            <draggable class="preview-widget-list" id="preview-widget-list" tag="div" :style="{paddingTop:pageConfig.marginTop + 'px',backgroundColor:pageConfig.bgColor,backgroundImage:'url('+pageConfig.bgImage+')'}"
+                                       v-model="previewWidgetList" v-bind="dragOptions" :move="onPreviewWidgetMove"
+                                       @start="isDragging=true" @end="isDragging=false">
+                                <transition-group type="transition" :name="'flip-list'">
+                                    <div :class="'preview-widget preview-widget-index'+pWidgetIndex+' '+((previewWidgetSelected == pWidgetIndex) ? 'preview-widget-selected' : '')"
+                                         v-for="(pWidgetItem,pWidgetIndex) in previewWidgetList" :key="pWidgetIndex"
+                                         @click="onPreviewWidgetSelect(pWidgetIndex)">
+                                        <component :ref="pWidgetItem.name" :is="pWidgetItem.name" :datas="pWidgetItem.datas"/>
+                                    </div>
+                                </transition-group>
+                            </draggable>
+                        </vuescroll>
+                    </div>
+                </div>
+                <div class="col-middle-footer">
+                    <div class="designer-btns">
+                        <a-tooltip v-if="!isDesignerMode" placement="bottom" title="点击进入设计模式以定义该页面">
+                            <a-button v-if="!isDesignerMode" class="designer-btn designer-btn-edit" icon="edit"
+                                      type="primary" shape="circle" @click="onDesignerMode(true)"/>
+                        </a-tooltip>
+                        <a-tooltip v-if="isDesignerMode" placement="bottom" title="系统将不会保存你做的任何更改">
+                            <a-button v-if="isDesignerMode" class="designer-btn designer-btn-cancel" icon="close"
+                                      @click="onDesignerMode(false)">取消
+                            </a-button>
+                        </a-tooltip>
+                        <a-tooltip v-if="isDesignerMode" placement="bottom" title="保存并生成新的页面布局和数据">
+                            <a-button v-if="isDesignerMode" class="designer-btn designer-btn-save" icon="check"
+                                      type="primary" @click="onSavePageData">保存布局/数据
+                            </a-button>
+                        </a-tooltip>
+                    </div>
+                </div>
+            </div>
+
+            <div class="designer-col col-right" v-if="isDesignerMode">
+                <div class="col-title">
+                    <span>组件属性</span>
+                    <img :src="previewScreenshot"/>
+                </div>
+                <div class="widget-attribute">
+                    <div class="attribute-tips" v-if="!previewWidgetSectData && !pageConfigure">在预览区选中组件即可设置组件属性</div>
+                    <div class="page-setting" v-if="pageConfigure" style="padding: 10px 20px">
+                        <a-form-item label="页面背景">
+                            <a-upload name="imgFile" listType="picture-card" class="setting-uploader" :showUploadList="false" action="http://sichuan.95504.net/v4/common/upload/upload" :beforeUpload="beforeUpload" @change="onPageSettingUploaderChange">
+                                <img v-if="pageConfig.bgImage" :src="pageConfig.bgImage" style="max-width: 260px" />
+                                <div v-else>
+                                    <a-icon :type="pageConfigLoading ? 'loading' : 'plus'" />
+                                    <div class="ant-upload-text">上传图片</div>
+                                </div>
+                            </a-upload>
+                        </a-form-item>
+                        <a-form-item label="页面背景色">
+                            <a-input v-model="pageConfig.bgColor">
+                                <span slot="addonBefore" :style="{width:'28px',height:'28px',display:'block',background:pageConfig.bgColor}"/>
+                            </a-input>
+                        </a-form-item>
+                        <a-form-item label="页面上边距(像素)">
+                            <a-slider :max="1000" :step="10" v-model="pageConfig.marginTop"/>
+                        </a-form-item>
+                    </div>
+                    <vuescroll :ops="vueScrollOps" v-if="previewWidgetSectData && !pageConfigure">
+                        <dynamic-form v-if="!pageConfigure" ref="dynamicForm" :fields="previewWidgetSectData ? previewWidgetSectData.info.fields : []" :datas="previewWidgetSectData.datas"/>
+                    </vuescroll>
+                </div>
+                <div class="designer-action" v-if="previewWidgetSectData && previewWidgetSectData.info.fields.length > 0 && !pageConfigure">
+                    <a-button type="primary" @click="onSaveWidgetData">保存组件数据</a-button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</template>
+
+<script>
+    import {category, widgets} from '@/components/designer/widget'
+    import dynamicForm from '@/components/designer/form'
+    import draggable from "vuedraggable";
+    import vuescroll from 'vuescroll';
+    Object.assign(widgets, {
+        draggable: draggable,
+        vuescroll: vuescroll,
+        'dynamic-form': dynamicForm
+    })
+    export default {
+        name: "index",
+        components: widgets,
+        data() {
+            return {
+                pageConfig:{
+                    bgImage: '',
+                    bgColor: '#f0f2f5',
+                    marginTop: 0,
+                },
+                pageConfigLoading: false,
+                pageConfigure: false,
+                isDragging: false,
+                isDesignerMode: false,
+                depositoryWidgetCategory: {
+                    'Basic': '基础组件',
+                    'Goods': '商品组件',
+                    'Promotion': '活动组件',
+                },
+                depositoryWidgetList: category,
+                previewWidgetList: [],
+                previewWidgetSelected: null,
+                previewWidgetSectData: null,
+                previewScreenshot: '',
+                vueScrollOps: {
+                    bar: {
+                        background: '#999',
+                        keepShow: false,
+                        size: '5px',
+                        minSize: 0.2
+                    },
+                },
+            }
+        },
+        created() {
+            this.$store.dispatch("common/setFullScreen", true);
+        },
+        computed: {
+            dragOptions() {
+                return {
+                    animation: 200,
+                    group: "description",
+                    disabled: !this.isDesignerMode,
+                    ghostClass: "ghost"
+                };
+            },
+        },
+        methods: {
+            onPageConfigMode(){
+                this.pageConfigure = !this.pageConfigure;
+            },
+            //添加组件到设计器
+            onAddWidgetToDesigner(widgetItem) {
+                this.previewWidgetList.push({name: widgetItem.name, fixed: false, info: widgetItem, datas:{}});
+            },
+            onSaveWidgetData() {
+                let widgetData = this.$refs.dynamicForm.makeData();
+                Object.assign(this.previewWidgetList[this.previewWidgetSelected],{
+                    datas: widgetData
+                });
+                this.$message.success('已保存');
+            },
+            onMakePageData() {
+                let pageData = [{type:'config',data:this.pageConfig}];
+                this.previewWidgetList.map(function (item) {
+                    pageData.push({
+                        type: item.name,
+                        data: item.datas
+                    })
+                });
+                return pageData;
+            },
+            onSavePageData() {
+                let self = this;
+                let pageData = self.onMakePageData();
+                console.log(pageData);
+                // self.$utils.common.MakeDomScreenshot(this.$refs.pagePreview).then(function (res) {
+                //     self.previewScreenshot = res.toDataURL('image/png');
+                // }).catch(function (err) {
+                //     console.warn(err)
+                // });
+
+            },
+            //进入设计模式
+            onDesignerMode(state) {
+                let self = this;
+                if (state) {
+                    self.$confirm({
+                        title: '确定要进入页面编辑模式吗?',
+                        content: '操作有一定风险，请谨慎选择，注意正确配置页面并保存数据',
+                        okText: '进入编辑模式',
+                        cancelText: '取消',
+                        onOk() {
+                            self.isDesignerMode = true;
+                        },
+                        onCancel() {
+                            self.isDesignerMode = false;
+                            self.previewWidgetSelected = null;
+                        }
+                    });
+                } else {
+                    self.isDesignerMode = false;
+                    self.previewWidgetSelected = null;
+                }
+            },
+            //预览窗口的组件选择
+            onPreviewWidgetSelect(currentId) {
+                if (this.isDesignerMode) {
+                    this.pageConfigure = false;
+                    this.previewWidgetSelected = currentId;
+                }
+                this.previewWidgetSectData = this.previewWidgetList[currentId];
+            },
+            //预览窗口的组件移动
+            onPreviewWidgetMove({relatedContext, draggedContext}) {
+                this.previewWidgetSelected = null;
+                const relatedElement = relatedContext.element;
+                const draggedElement = draggedContext.element;
+                return (
+                    (!relatedElement || !relatedElement.fixed) && !draggedElement.fixed
+                );
+            },
+            beforeUpload(file) {
+                const isJPG = file.type === 'image/jpeg' || file.type === 'image/png';
+                if (!isJPG) {
+                    this.$message.error('仅允许上传图片文件');
+                    return false;
+                }
+                const isLt2M = file.size / 1024 / 1024 < 2;
+                if (!isLt2M) {
+                    this.$message.error('文件大小不得超过2MB');
+                    return false;
+                }
+                return isJPG && isLt2M
+            },
+            onPageSettingUploaderChange(info) {
+                if (info.file.status === 'uploading') {
+                    this.pageConfigLoading = true;
+                    return
+                }
+                if (info.file.status === 'done') {
+                    this.pageConfig.bgImage = info.file.response.data.path;
+                    console.log(this.pageConfig.bgImage)
+                    this.pageConfigLoading = false;
+                }
+            },
+        }
+    }
+</script>
+
+<style scoped>
+    .page-designer {
+        position: relative;
+        height: 100%;
+        background: #f0f2f5 url("../../../assets/images/special-designer-background.png");
+    }
+
+    .designer-workspace {
+        position: relative;
+        min-width: 1060px;
+        height: 100%;
+        width: 100%;
+        overflow-x: hidden;
+        z-index: 900;
+    }
+
+    .designer-workspace .designer-col {
+        display: block;
+        background: #fff;
+    }
+
+    .designer-workspace .designer-col .col-title {
+        height: 50px;
+        border-bottom: 1px solid #eee;
+        background: #fff;
+        z-index: 900;
+    }
+
+    .designer-workspace .designer-col .col-title span:first-child {
+        font-size: 15px;
+        line-height: 50px;
+        padding: 0 15px;
+        font-weight: bolder;
+    }
+
+    .designer-workspace .col-left, .designer-workspace .col-middle {
+        width: 360px;
+        float: left;
+        box-sizing: content-box;
+    }
+
+    .designer-workspace .col-left {
+        border-left: 0;
+        width: 430px;
+        height: 100%;
+        box-shadow: 0px 0px 10px #666;
+        min-width: 232px;
+        animation: bounceInLeft .5s alternate cubic-bezier(0.215, 0.610, 0.355, 1.000)
+    }
+
+    .designer-workspace .col-middle {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        margin-left: -180px;
+        margin-top: -400px;
+        background: none;
+    }
+
+    .designer-workspace .col-right {
+        width: 430px;
+        height: 100%;
+        float: right;
+        box-shadow: 0px 0px 10px #666;
+        position: relative;
+        animation: bounceInRight .5s alternate cubic-bezier(0.215, 0.610, 0.355, 1.000)
+    }
+
+    .designer-workspace .col-middle .col-title >>>.anticon {
+        float: right;
+        line-height: 50px;
+        padding: 0 20px;
+        color: #007dff;
+        cursor: pointer;
+    }
+
+    .designer-workspace .col-middle .col-middle-content {
+        background: #ffffff;
+        box-shadow: 0px 0px 20px #999;
+
+    }
+
+    .designer-workspace .col-middle .col-middle-content .col-title span:last-child {
+        font-size: 12px;
+        float: right;
+        line-height: 50px;
+        padding-right: 10px;
+        color: #999;
+    }
+
+    .designer-workspace .col-middle .page-preview {
+        width: 360px;
+        height: 640px;
+        overflow-y: auto;
+        background-repeat: no-repeat;
+        background-position: center top;
+        background-size: 100%;
+    }
+
+    .designer-workspace .col-middle .page-preview .preview-widget-list {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        background-repeat: no-repeat;
+        background-position: center top;
+        background-size: 100%;
+    }
+
+    .designer-workspace .col-middle .page-preview .preview-widget {
+        height: auto;
+        /*background: #eee;*/
+        border: 1px dashed transparent;
+        padding: 5px;
+        margin-bottom: -5px;
+        cursor: pointer;
+    }
+
+    .designer-workspace .col-middle .page-preview .preview-widget-selected {
+        border-color: #007dff;
+        box-sizing: border-box;
+    }
+
+    .designer-workspace .col-left .designer-widget {
+        height: calc(100% - 50px);
+        overflow-y: auto;
+        background: #fff;
+    }
+
+    .designer-workspace .col-left .designer-widget .widget-item {
+        position: relative;
+        background: #fff;
+        width: 200px;
+        margin: 5px;
+        float: left;
+        cursor: pointer;
+    }
+
+    .designer-workspace .col-left .designer-widget .widget-item:last-child {
+        margin-bottom: 0;
+    }
+
+    .designer-workspace .col-left .designer-widget .widget-item img {
+        width: 200px;
+        height: 120px;
+    }
+
+    .designer-workspace .col-left .designer-widget .widget-item span {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        line-height: 30px;
+        padding: 0 10px;
+        display: block;
+        font-size: 12px;
+        background: rgba(0, 0, 0, .3);
+        color: #fff;
+    }
+
+    .designer-workspace .col-right .designer-action {
+        height: 60px;
+        padding: 14px 0;
+        position: absolute;
+        width: 100%;
+        text-align: center;
+        bottom: 0;
+        background: #f0f2f5;
+        border-top: 1px solid #d5dfea;
+        box-sizing: border-box;
+    }
+
+    .designer-workspace .col-middle .col-middle-footer {
+        margin-top: 30px;
+        text-align: center;
+        height: 70px;
+    }
+
+    .designer-workspace .col-middle .col-middle-footer .designer-btns .designer-btn {
+        border-radius: 30px;
+        box-shadow: 0px 4px 15px rgba(0, 0, 0, .3);
+
+    }
+
+    .designer-workspace .col-middle .col-middle-footer .designer-btns .designer-btn-edit {
+        width: 40px;
+        height: 40px;
+    }
+
+    .designer-workspace .col-middle .col-middle-footer .designer-btns .designer-btn-cancel {
+        margin-right: 10px;
+    }
+
+    @keyframes bounceInLeft {
+        0% {
+            opacity: 0;
+            transform: translate3d(-300px, 0, 0);
+        }
+        100% {
+            transform: none;
+        }
+    }
+
+    @keyframes bounceInRight {
+        0% {
+            opacity: 0;
+            transform: translate3d(700px, 0, 0);
+        }
+        100% {
+            transform: none;
+        }
+    }
+
+    @media screen and (max-width: 1425px) {
+        .designer-workspace .col-left {
+            width: 220px;
+        }
+
+        .designer-workspace .col-middle {
+            left: 430px;
+        }
+    }
+
+    .designer-workspace .col-right .widget-attribute {
+        position: absolute;
+        top: 50px;
+        bottom: 60px;
+        left: 0;
+        right: 0;
+    }
+    .designer-workspace .col-right .widget-attribute .attribute-tips {
+        text-align: center;
+        padding: 50px 0;
+    }
+</style>

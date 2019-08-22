@@ -1,0 +1,49 @@
+<template>
+    <div class="form-container">
+        <a-button @click="outDatas">TEST</a-button>
+        <div class="form-item" v-for="field in fields" v-if="fields.length > 0">
+            <component :ref="field.type" v-if="field.type === 'upload'" :is="field.type" :maxNum="field.config.maxNum" :datas="datas"/>
+        </div>
+        <a-alert class="form-tips" :showIcon="false" message="组件没有可配置信息" type="info" v-if="!fields.length" banner/>
+    </div>
+</template>
+
+<script>
+    import upload from '@/components/designer/form/upload';
+    export default {
+        name: "dynamic-form",
+        components: {
+            upload: upload
+        },
+        props: {
+            fields: {
+                type: Array,
+                required: true
+            },
+            datas: Object
+        },
+        methods: {
+            makeData() {
+                let self = this;
+                let datas = {};
+                if (self.fields.length > 0) {
+                    self.fields.map(function (field) {
+                        let ref = self.$refs[field.type];
+                        datas[field.type] = ref[0].getFieldData();
+                    })
+                }
+                return datas;
+            },
+            outDatas() {
+                console.log(this.datas)
+            }
+        }
+    }
+</script>
+
+<style scoped>
+    .form-tips {
+        margin: 20px;
+        text-align: center;
+    }
+</style>

@@ -1,0 +1,34 @@
+<template>
+    <div class="WidgetL1R2">
+        <div class="L1R2-left">
+            <img :src="(datas && datas.upload) ? datas.upload[0].imageUrl : require('@/assets/images/designer-widget/default-image.png')" width="173" height="174"/>
+        </div>
+        <div class="L1R2-right">
+            <img :src="(datas && datas.upload) ? datas.upload[1].imageUrl : require('@/assets/images/designer-widget/default-image.png')" width="173" height="87"/>
+            <img :src="(datas && datas.upload) ? datas.upload[2].imageUrl : require('@/assets/images/designer-widget/default-image.png')" width="173" height="87"/>
+        </div>
+    </div>
+</template>
+
+<script>
+    export default {
+        title: '左一右二',
+        name: 'WidgetL1R2',
+        visible: true,
+        category: 'Basic',
+        preview: require('@/assets/images/designer-widget/preview-1n2.png'),
+        fields: [
+            {
+                type:'upload',
+                config: {
+                    colNum: 1,
+                    minNum: 3,
+                    maxNum: 3
+                }
+            }
+        ],
+        props: {
+            datas: Object
+        }
+    }
+</script>

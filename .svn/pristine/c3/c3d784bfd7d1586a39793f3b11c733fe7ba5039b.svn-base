@@ -1,0 +1,22 @@
+<template>
+    <div class="WidgetBasicSlider">
+        <a-carousel autoplay :autoplaySpeed="5000000">
+            <div><h3>{{ msg }}</h3></div>
+            <div><h3>Width: 720px</h3></div>
+            <div><h3>Height: 288px</h3></div>
+            <div><h3>Proportion: 20:8</h3></div>
+        </a-carousel>
+    </div>
+</template>
+
+<script>
+    export default {
+        title: '基础轮播组件',
+        name: 'WidgetBasicSlider',
+        category: 'Basic',
+        preview: require('@/assets/images/designer-widget/preview-BasicSlider.png'),
+        props: {
+            msg: String
+        }
+    }
+</script>

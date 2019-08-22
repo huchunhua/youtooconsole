@@ -1,0 +1,203 @@
+.page-designer .designer-workspace .page-preview .preview-widget .WidgetBasicSlider .ant-carousel .slick-slide {
+    text-align: center;
+    height: 144px;
+    line-height: 144px;
+    background: #ccc;
+    overflow: hidden;
+}
+
+.page-designer .designer-workspace .page-preview .preview-widget .WidgetBasicSlider .ant-carousel .slick-slide h3 {
+    color: #fff;
+}
+
+.page-designer .designer-workspace .page-preview .preview-widget .WidgetTabBar .ant-tabs {
+    background: #fff;
+    padding: 10px;
+    height: 150px;
+}
+
+.page-designer .designer-workspace .page-preview .preview-widget .WidgetTabBar .ant-tabs-nav .ant-tabs-tab:hover {
+    color: #ccc;
+}
+
+.page-designer .designer-workspace .page-preview .preview-widget .WidgetTabBar .ant-tabs-nav .ant-tabs-tab-active {
+    color: #ccc;
+}
+
+.page-designer .designer-workspace .page-preview .preview-widget .WidgetTabBar .ant-tabs-nav .ant-tabs-ink-bar {
+    background: #ccc;
+}
+
+.page-designer .designer-workspace .page-preview .preview-widget .WidgetGoods {
+    margin: -2.5px;
+    /*width: 358px;*/
+    height: 350px;
+}
+
+.page-designer .designer-workspace .page-preview .preview-widget .WidgetGoods .WidgetGoods-goodsList {
+    /*margin: -2.5px;*/
+}
+
+.page-designer .designer-workspace .page-preview .preview-widget .WidgetGoods .WidgetGoods-goodsList .ant-card {
+    display: inline-block;
+    float: left;
+    width: 112.3px;
+    margin: 2.5px;
+    border: 0;
+    background: #fff;
+    box-shadow: 0px 0px 5px #ccc;
+}
+
+.page-designer .designer-workspace .page-preview .preview-widget .WidgetGoods .WidgetGoods-goodsList .ant-card .ant-card-body {
+    padding: 0;
+}
+
+.page-designer .designer-workspace .page-preview .preview-widget .WidgetGoods .WidgetGoods-goodsList .ant-card .ant-card-body .ant-card-meta {
+    font-size: 12px;
+    margin: 5px 10px;
+    line-height: 14px;
+}
+
+.page-designer .designer-workspace .page-preview .preview-widget .WidgetGoods .WidgetGoods-goodsList .ant-card .ant-card-body .ant-card-meta .ant-card-meta-title {
+    font-size: 12px;
+    font-weight: bold;
+    color: #666;
+    margin: 0;
+}
+
+.page-designer .designer-workspace .page-preview .preview-widget .WidgetGoods .WidgetGoods-goodsList .ant-card .ant-card-body .ant-card-meta .ant-card-meta-description span {
+    display: block;
+}
+
+.page-designer .designer-workspace .page-preview .preview-widget .WidgetGoods .WidgetGoods-goodsList .ant-card .ant-card-body .ant-card-meta .ant-card-meta-description span:first-child {
+    color: rgb(250, 173, 20);
+}
+
+.page-designer .designer-workspace .page-preview .preview-widget .WidgetGoods .WidgetGoods-goodsList.Widget-skeleton .ant-card .ant-card-body .ant-card-meta {
+    margin: 5px;
+}
+
+.page-designer .designer-workspace .page-preview .preview-widget .WidgetGoods .WidgetGoods-goodsList.Widget-skeleton .ant-card .ant-card-body .ant-card-meta .ant-card-meta-title {
+    color: #ccc;
+    background: #ccc;
+    margin-bottom: 2.5px;
+    border-radius: 4px;
+}
+
+.page-designer .designer-workspace .page-preview .preview-widget .WidgetGoods .WidgetGoods-goodsList.Widget-skeleton .ant-card .ant-card-body .ant-card-meta .ant-card-meta-description span {
+    color: #ccc;
+    background: #ccc;
+    border-radius: 4px;
+}
+
+.page-designer .designer-workspace .page-preview .preview-widget .WidgetGoods .WidgetGoods-goodsList.Widget-skeleton .ant-card .ant-card-body .ant-card-meta .ant-card-meta-description span:first-child {
+    margin-bottom: 2.5px;
+    display: inline-block;
+    border-radius: 4px;
+}
+
+.page-designer .designer-workspace .col-middle .page-preview .__vuescroll .__panel .__view {
+    position: unset !important;
+    min-width: unset !important;
+    min-height: unset !important;
+    width: 360px !important;
+
+}
+.WidgetL1R2,.WidgetL2R1,.WidgetGrid4 {
+    display: flex;
+}
+.WidgetL1R2 .L1R2-left, .WidgetL1R2 .L1R2-right, .WidgetL2R1 .L2R1-left, .WidgetL2R1 .L2R1-right, .WidgetGrid4 .grid4-col{
+    flex: 1;
+}
+.WidgetL1R2 .L1R2-left,.WidgetL2R1 .L2R1-left {
+    border-right: 1px solid #eee;
+}
+.WidgetL1R2 .L1R2-right img:last-child,.WidgetL2R1 .L2R1-left img:last-child, .WidgetGrid4 .grid4-col img:last-child{
+    border-top: 1px solid #eee;
+}
+.WidgetGrid4 .grid4-col:first-child {
+    border-right: 1px solid #eee;
+}
+.WidgetNavigation .navigation-ul {
+    margin: 0;
+    padding: 10px 0 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    list-style: none;
+
+}
+.WidgetNavigation .navigation-ul .navigation-item {
+    flex: 1;
+    width: 25%;
+    min-width: 25%;
+    max-width: 25%;
+    min-height: 50px;
+    text-align: center;
+    font-size: 12px;
+    float: left;
+}
+.WidgetNavigation .navigation-ul .navigation-item img {
+    width: 40px;
+    height: 40px;
+    border-radius: 20px;
+}
+.WidgetNavigation .navigation-ul .navigation-item .anticon {
+    font-size: 18px;
+    background: #fff;
+    padding: 10px;
+    color: #eee;
+    border-radius: 20px;
+}
+.WidgetNavigation .navigation-ul .navigation-item span {
+    margin: 5px 0 10px 0;
+    display: block;
+
+}
+.WidgetNavigation .navigation-ul .navigation-item span.sample {
+    height: 16px;
+    line-height: 16px;
+    width: 50px;
+    display: inline-block;
+    background: #fefefe;
+    border-radius: 4px;
+}
+.WidgetSeriesA .seriesa-ul {
+    width: 100%;
+    height: 60px;
+    overflow: hidden;
+    white-space:nowrap;
+}
+.WidgetSeriesA .seriesa-ul .seriesa-item {
+    display: inline-block;
+    float: left;
+    margin-right: 10px;
+}
+.WidgetSeriesA .seriesa-ul .seriesa-item:last-child {
+    margin-right: 0px;
+}
+.WidgetSeriesA .seriesa-ul .seriesa-item img{
+    width: 60px;
+    height: 60px;
+}
+
+.WidgetSeriesB .seriesb-banner img {
+    width: 100%;
+    max-height: 115px;
+}
+.WidgetSeriesB .seriesb-ul {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    list-style: none;
+    border-top: 1px solid #eee;
+}
+.WidgetSeriesB .seriesb-ul .seriesb-item{
+    flex: 1;
+    border-right: 1px solid #eee;
+}
+.WidgetSeriesB .seriesb-ul .seriesb-item img{
+    width: 100%;
+}
+.WidgetSeriesB .seriesb-ul .seriesb-item:last-child{
+    border-right: 0;
+}

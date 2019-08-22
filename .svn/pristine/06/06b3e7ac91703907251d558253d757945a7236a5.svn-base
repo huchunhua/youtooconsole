@@ -1,0 +1,164 @@
+<template>
+    <div>
+        <div class='margin-bottom'>
+            <a-select defaultValue="1" style="width: 120px" @change="handleTimetypeChange">
+              <a-select-option value="1">日结时间</a-select-option>
+              <a-select-option value="2">自然时间</a-select-option>
+            </a-select>
+            <a-range-picker style="margin-right:20px" @change="onTimeChange">
+              <template slot="dateRender" slot-scope="current">
+                <div class="ant-calendar-date" :style="getCurrentStyle(current)">
+                  {{current.date()}}
+                </div>
+              </template>
+            </a-range-picker>
+            选择分公司：
+            <a-select defaultValue="成品油公司" style="width: 120px" @change="handleCompanyChange">
+              <a-select-option value="成品油公司">成品油公司</a-select-option>
+              <a-select-option value="成都公司">成都公司</a-select-option>
+            </a-select>
+            <a-button type="primary" style="margin:0 20px">确定</a-button>
+            <a-button type="primary">导出</a-button>
+        </div>
+        <a-table :columns="columns" :dataSource="data" bordered size="middle" :pagination=false>
+          <span slot="actions" slot-scope="text, record">
+            <a-tooltip placement="top">
+              <template slot="title">
+                <span>查看</span>
+              </template>
+              <a-icon type="form"  @click="getDetail(record.id)"/>
+            </a-tooltip> 
+          </span>
+        </a-table>
+        <template>
+          <a-pagination :current="current" :total="pagenum" @change="onChange"/>
+        </template> 
+    </div>
+</template>
+<script>
+    const columns = [
+        {
+          title: '加管编码',
+          dataIndex: 'id',
+        },
+        {
+          title: '公司',
+          dataIndex: 'name',
+        },
+        {
+          title: '总金额',
+          dataIndex: 'sellall',
+        },
+        {
+          title: '微信',
+          children: [{
+            title: '总金额',
+            dataIndex: 'companyAddress',
+            key: 'companyAddress',
+          }, {
+            title: '手续费',
+            dataIndex: 'companyName',
+            key: 'companyName',
+          },{
+            title: '净金额',
+            dataIndex: 'companyName',
+            key: 'companyName',            
+          }],
+        },
+        {
+          title: '支付宝',
+          children: [{
+            title: '总金额',
+            dataIndex: 'companyAddress',
+            key: 'companyAddress',
+          }, {
+            title: '手续费',
+            dataIndex: 'companyName',
+            key: 'companyName',
+          },{
+            title: '净金额',
+            dataIndex: 'companyName',
+            key: 'companyName',            
+          }],
+        },
+        {
+          title: '翼支付',
+          children: [{
+            title: '总金额',
+            dataIndex: 'companyAddress',
+            key: 'companyAddress',
+          }, {
+            title: '手续费',
+            dataIndex: 'companyName',
+            key: 'companyName',
+          },{
+            title: '净金额',
+            dataIndex: 'companyName',
+            key: 'companyName',            
+          }],
+        },
+        {
+          title: '电子券',
+          dataIndex: 'payall',
+        },
+        {
+          title: '净金额',
+          dataIndex: 'oil',
+        },
+        {
+          title: '操作',
+          key: 'actions',
+          dataIndex: 'actions',
+          scopedSlots: { customRender: 'actions' },
+    }];
+    const data = [
+        {
+            id:"MV12C",
+            name:'青羊加油站',
+            sellall:10000.00,
+            couponall:200.00,
+            payall:9800.00,
+            oil:8000.00,
+            coupon:150.00,
+            a:7850.00,
+            b:2000.00,
+            c:50.00,
+            d:1950.00
+        }
+    ]
+    export default {
+        data() {
+            return {
+                data:data,
+                columns,
+                pagenum:'',
+                current:1
+            }
+        },
+        methods: {
+            handleTimetypeChange(value) {
+              console.log(`时间类型 ${value}`);
+            },            
+            handleCompanyChange(value) {
+              console.log(`公司 ${value}`);
+            },
+            onTimeChange(date, dateString) {
+              console.log('开始时间' +  dateString[0]);
+              console.log('结束时间' +  dateString[1]);
+            },
+            getCurrentStyle (current, today) {
+              const style = {}
+              if (current.date() === 1) {
+                style.border = '1px solid #1890ff'
+                style.borderRadius = '50%'
+              }
+              return style
+            }
+        }
+    }
+</script>
+<style scoped>
+.margin-bottom{
+  margin-bottom: 30px;
+}
+</style>

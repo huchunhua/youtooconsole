@@ -1,0 +1,201 @@
+<template>
+    <div>
+        <div class='margin-bottom'>
+            <a-select defaultValue="1" style="width: 120px" @change="handleTimetypeChange">
+              <a-select-option value="1">日结时间</a-select-option>
+              <a-select-option value="2">自然时间</a-select-option>
+            </a-select>
+            <a-range-picker style="margin-right:20px" :defaultValue="[moment('2019/01/01', 'YYYY-MM-DD'), moment('2019/06/01', 'YYYY-MM-DD')]" @change="onTimeChange">
+              <template slot="dateRender" slot-scope="current">
+                <div class="ant-calendar-date" :style="getCurrentStyle(current)">
+                  {{current.date()}}
+                </div>
+              </template>
+            </a-range-picker>
+<!--             选择分公司：
+            <a-select defaultValue="成品油公司" style="width: 120px" @change="handleCompanyChange">
+              <a-select-option value="成品油公司">成品油公司</a-select-option>
+              <a-select-option value="成都公司">成都公司</a-select-option>
+            </a-select> -->
+            <a-button type="primary" style="margin:0 20px"  @click="getData">确定</a-button>
+            <a-button type="primary" @click="Download">导出</a-button>
+        </div>
+        <a-table :columns="columns" :dataSource="data" bordered size="middle" :pagination=false>
+          <span slot="actions" slot-scope="text, record">
+            <a-tooltip placement="top">
+              <template slot="title">
+                <span>查看</span>
+              </template>
+              <a-icon type="form"  @click="goCompany(record.companyCode)"/>
+            </a-tooltip> 
+          </span>
+        </a-table>
+        <template>
+          <a-pagination :current="current" :total="total" :defaultPageSize="pagesize" @change="onChange"/>
+        </template> 
+    </div>
+</template>
+<script>
+    import moment from 'moment';
+    const columns = [
+        {
+          title: '加管编码',
+          dataIndex: 'companyCode',
+          key: 'companyCode'
+        },
+        {
+          title: '公司',
+          dataIndex: 'companyName',
+          key: 'companyName'
+        },
+        {
+          title: '总金额',
+          dataIndex: 'all_money',
+          key: 'all_money'
+        },
+        {
+          title: '微信',
+          children: [{
+            title: '总金额',
+            dataIndex: 'wx_pay_all',
+            key: 'wx_pay_all',
+          }, {
+            title: '手续费',
+            dataIndex: 'wx_service_money',
+            key: 'wx_service_money',
+          },{
+            title: '净金额',
+            dataIndex: 'wx_income_money',
+            key: 'wx_income_money',            
+          }],
+        },
+        {
+          title: '支付宝',
+          children: [{
+            title: '总金额',
+            dataIndex: 'alipay_pay_all',
+            key: 'alipay_pay_all',
+          }, {
+            title: '手续费',
+            dataIndex: 'alipay_service_money',
+            key: 'alipay_service_money',
+          },{
+            title: '净金额',
+            dataIndex: 'alipay_income_money',
+            key: 'alipay_income_money',            
+          }],
+        },
+        {
+          title: '翼支付',
+          children: [{
+            title: '总金额',
+            dataIndex: 'best_pay_all',
+            key: 'best_pay_all',
+          }, {
+            title: '手续费',
+            dataIndex: 'best_service_money',
+            key: 'best_service_money',
+          },{
+            title: '净金额',
+            dataIndex: 'best_income_money',
+            key: 'best_income_money',            
+          }],
+        },
+        {
+          title: '电子券',
+          dataIndex: 'electronics_coupon',
+          key: 'electronics_coupon'
+        },
+        {
+          title: '净金额',
+          dataIndex: 'all_pure_money',
+          key: 'all_pure_money'
+        },
+        {
+          title: '操作',
+          key: 'actions',
+          dataIndex: 'actions',
+          scopedSlots: { customRender: 'actions' },
+    }];
+    export default {
+        data() {
+            return {
+                data:[],
+                columns,
+                current:1,
+                time_type:1,
+                time_start:'',
+                time_end:'',
+                total:0,
+                pagesize:15
+            }
+        },
+        created() {
+          const _this = this;
+          _this.getData();
+        },
+        methods: {
+          moment,
+            handleTimetypeChange(value) {
+              this.time_type = value;
+            },            
+            // handleCompanyChange(value) {
+            //   console.log(`公司 ${value}`);
+            // },
+            onTimeChange(date, dateString) {
+              this.time_start = dateString[0];
+              this.time_end = dateString[1];
+            },
+            getCurrentStyle (current, today) {
+              const style = {}
+              if (current.date() === 1) {
+                style.border = '1px solid #1890ff'
+                style.borderRadius = '50%'
+              }
+              return style
+            },
+            goCompany(id) {
+              this.$router.push({name: 'PaymentCompanty', params: {id: id}});
+            }, 
+            Download(type) {
+              var _this = this;
+              const time_type = _this.time_type;
+              const time_start = _this.time_start;
+              const time_end = _this.time_end;
+              var token = this.$utils.cookie.get('token') ? this.$utils.cookie.get('token') : this.$utils.common.test.token;
+              window.open('http://120.78.200.26/console/bill/payReportProvince?' + 'token=' + token +'&time_type=' + time_type + '&time_start=' + time_start + '&time_end=' + time_end + '&is_export=1');
+            },
+            onChange(current) {
+              const _this = this;
+              const time_type = _this.time_type;
+              const time_start = _this.time_start;
+              const time_end = _this.time_end;
+              _this.current = current;
+              this.$model.bill.getPayList({time_type:time_type,time_start:time_start,time_end:time_end,page:current}).then((response) => {
+                  _this.data = response.data;
+                  _this.data.forEach((item,index)=>{
+                    item.key = index
+                  });
+              })
+            },
+            getData(){
+              const _this = this;
+              const time_type = _this.time_type;
+              const time_start = _this.time_start;
+              const time_end = _this.time_end;
+              this.$model.bill.getPayList({time_type:time_type,time_start:time_start,time_end:time_end}).then((response) => {
+                _this.total = response.total;
+                _this.data = response.data;
+                _this.data.forEach((item,index)=>{
+                  item.key = index
+                });
+              })
+            }
+        }
+    }
+</script>
+<style scoped>
+.margin-bottom{
+  margin-bottom: 30px;
+}
+</style>

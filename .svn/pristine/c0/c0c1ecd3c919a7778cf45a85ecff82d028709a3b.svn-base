@@ -1,0 +1,197 @@
+<template>
+    <div>
+        <div>
+            <a-select defaultValue="1" style="width: 120px" @change="handleTimetypeChange">
+              <a-select-option value="1">日结时间</a-select-option>
+              <a-select-option value="2">自然时间</a-select-option>
+            </a-select>
+            <a-range-picker style="margin-right:20px"  @change="onTimeChange">
+              <template slot="dateRender" slot-scope="current">
+                <div class="ant-calendar-date" :style="getCurrentStyle(current)">
+                  {{current.date()}}
+                </div>
+              </template>
+            </a-range-picker>
+            选择片区：
+            <a-select :defaultValue="areaData[0]" style="width: 120px" @change="handleAreaChange">
+                <a-select-option v-for="area in areaData" :key="area">{{area}}</a-select-option>
+            </a-select>
+            选择公司：
+            <a-select v-model="company" style="width: 120px" @change="handleCompanyChange">
+                <a-select-option v-for="company in companys" :key="company">{{company}}</a-select-option>
+            </a-select>
+            <a-button type="primary" style="margin:0 20px">确定</a-button>
+            <a-button type="primary">导出</a-button>
+        </div>
+        <div style="background-color: #ececec; padding: 20px;margin:30px 0">
+            <a-row :gutter="16">
+              <a-col :span="8">
+                <a-card title="今日油品销售" :bordered=false>
+                    <span style="padding:20px">销售金额：222元</span>
+                    <a-divider type="vertical" />
+                    <span style="padding:20px">优惠金额：100元</span>
+                    <a-divider type="vertical" />
+                    <span style="padding:20px">实付金额：122元</span>
+                </a-card>
+              </a-col>
+              <a-col :span="8">
+                <a-card title="今日非油销售" :bordered=false>
+                    <span style="padding:20px">销售金额：222元</span>
+                    <a-divider type="vertical" />
+                    <span style="padding:20px">优惠金额：100元</span>
+                    <a-divider type="vertical" />
+                    <span style="padding:20px">实付金额：122元</span>
+                </a-card> 
+              </a-col>
+              <a-col :span="8">
+                <a-card title="今日销售总额" :bordered=false>
+                    <span style="padding:20px">销售金额：222元</span>
+                    <a-divider type="vertical" />
+                    <span style="padding:20px">优惠金额：100元</span>
+                    <a-divider type="vertical" />
+                    <span style="padding:20px">实付金额：122元</span>
+                </a-card>   
+              </a-col>
+            </a-row>
+        </div>
+        <a-table :columns="columns" :dataSource="data" :pagination=false>
+          <span slot="actions" slot-scope="text, record">
+            <a-tooltip placement="top">
+              <template slot="title">
+                <span>查看</span>
+              </template>
+              <a-icon type="form"  @click="getDetail(record.id)"/>
+            </a-tooltip> 
+          </span>
+        </a-table>
+        <template>
+          <a-pagination :current="current" :total="pagenum" @change="onChange"/>
+        </template> 
+    </div>
+</template>
+<script>
+    const areaData = ['成华区', '高新区'];
+    const companyData = {
+        成华区: ['公司1', '2', '3'],
+        高新区: ['4', '5', '6'],
+    };
+    const columns = [
+        {
+          title: '片区编码',
+          dataIndex: 'id',
+        },
+        {
+          title: '片区',
+          dataIndex: 'area',
+        },
+        {
+          title: '油站编码',
+          dataIndex: 'num',
+        },
+        {
+          title: '油站名称',
+          dataIndex: 'name',
+        },
+        {
+          title: '销售合计（元）',
+          dataIndex: 'sellall',
+        },
+        {
+          title: '优惠合计（元）',
+          dataIndex: 'couponall',
+        },
+        {
+          title: '实际支付（元）',
+          dataIndex: 'payall',
+        },
+        {
+          title: '油品销售（元）',
+          dataIndex: 'oil',
+        },
+        {
+          title: '油品优惠（元）',
+          dataIndex: 'coupon',
+        },
+        {
+          title: '油品实付（元）',
+          dataIndex: 'a',
+        },
+        {
+          title: '非油销售（元）',
+          dataIndex: 'b',
+        },
+        {
+          title: '非油优惠（元）',
+          dataIndex: 'c',
+        },
+        {
+          title: '非油实付（元）',
+          dataIndex: 'd',
+        },
+        {
+          title: '操作',
+          key: 'actions',
+          dataIndex: 'actions',
+          scopedSlots: { customRender: 'actions' },
+    }];
+    const data = [
+        {
+            id:"MV12C",
+            area:'青羊',
+            num:'MV12',
+            name:'青羊加油站',
+            sellall:10000.00,
+            couponall:200.00,
+            payall:9800.00,
+            oil:8000.00,
+            coupon:150.00,
+            a:7850.00,
+            b:2000.00,
+            c:50.00,
+            d:1950.00
+        }
+    ]
+    export default {
+        data() {
+            return {
+                areaData,
+                companyData,
+                companys: companyData[areaData[0]],
+                company:companyData[areaData[0]][0],
+                data:data,
+                columns,
+                pagenum:'',
+                current:1
+            }
+        },
+        created() {
+          const _this = this;
+          const id = _this.$route.params.id;
+          _this.getData();
+        },
+        methods: {
+            handleTimetypeChange(value) {
+              console.log(`时间类型 ${value}`);
+            },
+            onTimeChange(date, dateString) {
+              console.log('开始时间' +  dateString[0]);
+              console.log('结束时间' +  dateString[1]);
+            },
+            handleAreaChange(value) {
+                this.companys = companyData[value]
+                this.company = companyData[value][0]
+            },
+            handleCompanyChange(value) {
+              console.log('公司' + this.company)
+            },
+            getCurrentStyle (current, today) {
+              const style = {}
+              if (current.date() === 1) {
+                style.border = '1px solid #1890ff'
+                style.borderRadius = '50%'
+              }
+              return style
+            }
+        }
+    }
+</script>

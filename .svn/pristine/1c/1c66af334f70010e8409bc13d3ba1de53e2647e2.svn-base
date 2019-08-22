@@ -1,0 +1,19 @@
+import Vue from 'vue'
+import store from '@/store/index'
+import {router} from '@/router/index'
+const widget = {
+    mount(widgetData,params,elId) {
+        var widget = Vue.extend(widgetData);
+        var widgetObj = new widget({
+            router,
+            store,
+            propsData:params
+        }).$mount();
+        var targetEl = document.querySelector(elId);
+        // console.log(targetEl)
+        targetEl.appendChild(widgetObj.$el);
+        return widgetObj;
+        // targetEl.insertBefore(widget.$el,targetEl.children[0])
+    }
+}
+export default widget;

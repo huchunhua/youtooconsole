@@ -1,0 +1,35 @@
+<template>
+    <div class="WidgetGrid4">
+        <div class="grid4-col">
+            <img :src="(datas && datas.upload) ? datas.upload[0].imageUrl : require('@/assets/images/designer-widget/default-image.png')" width="173"/>
+            <img :src="(datas && datas.upload) ? datas.upload[1].imageUrl : require('@/assets/images/designer-widget/default-image.png')" width="173"/>
+        </div>
+        <div class="grid4-col">
+            <img :src="(datas && datas.upload) ? datas.upload[2].imageUrl : require('@/assets/images/designer-widget/default-image.png')" width="173"/>
+            <img :src="(datas && datas.upload) ? datas.upload[3].imageUrl : require('@/assets/images/designer-widget/default-image.png')" width="173"/>
+        </div>
+    </div>
+</template>
+
+<script>
+    export default {
+        title: '四宫格',
+        name: 'WidgetGrid4',
+        visible: true,
+        category: 'Basic',
+        preview: require('@/assets/images/designer-widget/preview-4x.png'),
+        fields: [
+            {
+                type:'upload',
+                config: {
+                    colNum: 2,
+                    minNum: 4,
+                    maxNum: 4
+                }
+            }
+        ],
+        props: {
+            datas: Object
+        }
+    }
+</script>

@@ -1,0 +1,31 @@
+<template>
+    <div class="WidgetBasicSlider">
+        <a-carousel autoplay :autoplaySpeed="3000">
+            <div v-if="datas && datas.upload != undefined" v-for="item in datas.upload">
+                <img :src="item.imageUrl"/>
+            </div>
+            <div v-if="!datas || datas.upload == undefined" v-for="i in 3"><h3>Width:720px/Height:288px/Proportion:20:8</h3></div>
+        </a-carousel>
+    </div>
+</template>
+
+<script>
+    export default {
+        title: '基础轮播组件',
+        name: 'WidgetBasicSlider',
+        category: 'Basic',
+        preview: require('@/assets/images/designer-widget/preview-BasicSlider.png'),
+        fields: [
+            {
+                type:'upload',
+                config: {
+                    minNum: 1,
+                    maxNum: 5
+                }
+            }
+        ],
+        props: {
+            datas: Object
+        }
+    }
+</script>

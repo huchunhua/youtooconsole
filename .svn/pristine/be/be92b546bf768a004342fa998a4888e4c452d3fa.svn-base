@@ -1,0 +1,45 @@
+<template>
+    <div class="WidgetSeriesB">
+        <div class="seriesb-banner">
+            <img :src="require('@/assets/images/designer-widget/default-image.png')" v-if="!datas || datas.upload == undefined"/>
+            <img :src="datas.upload[0].imageUrl" v-if="datas && datas.upload != undefined"/>
+        </div>
+        <ul class="seriesb-ul">
+            <li class="seriesb-item" v-if="!datas || datas.upload == undefined" v-for="i in 3">
+                <img :src="require('@/assets/images/designer-widget/default-image.png')"/>
+            </li>
+            <li class="seriesb-item" v-if="datas && datas.upload != undefined">
+                <img :src="datas.upload[1].imageUrl"/>
+            </li>
+            <li class="seriesb-item" v-if="datas && datas.upload != undefined">
+                <img :src="datas.upload[2].imageUrl"/>
+            </li>
+            <li class="seriesb-item" v-if="datas && datas.upload != undefined">
+                <img :src="datas.upload[3].imageUrl"/>
+            </li>
+        </ul>
+    </div>
+</template>
+
+<script>
+    export default {
+        title: '专题',
+        name: 'WidgetSeriesB',
+        visible: true,
+        category: 'Basic',
+        preview: require('@/assets/images/designer-widget/preview-seriesb.png'),
+        fields: [
+            {
+                type:'upload',
+                config: {
+                    colNum: 1,
+                    minNum: 4,
+                    maxNum: 4
+                }
+            }
+        ],
+        props: {
+            datas: Object
+        }
+    }
+</script>

@@ -1,0 +1,124 @@
+<template>
+    <div>
+        <div class="margin-bottom">
+            <a-select defaultValue="1" style="width: 120px"  @change="handleTimetypeChange">
+              <a-select-option value="1">日结时间</a-select-option>
+              <a-select-option value="2">自然时间</a-select-option>
+            </a-select>
+            <a-range-picker style="margin-right:20px" @change="onTimeChange">
+              <template slot="dateRender" slot-scope="current">
+                <div class="ant-calendar-date" :style="getCurrentStyle(current)">
+                  {{current.date()}}
+                </div>
+              </template>
+            </a-range-picker>
+            消费类型：
+            <a-select :defaultValue="type[0].value" style="width: 120px" @change="handleTypeChange">
+              <a-select-option v-for="type in type" :value="type.value" :key="type">{{type.name}}</a-select-option>
+            </a-select>
+            <a-button type="primary" style="margin:0 20px">确定</a-button>
+            <a-button type="primary">导出</a-button>
+        </div>
+        <a-table :columns="columns" :dataSource="data" :pagination=false>
+          <span slot="actions" slot-scope="text, record">
+            <a-tooltip placement="top">
+              <template slot="title">
+                <span>查看</span>
+              </template>
+              <a-icon type="form"  @click="getDetail(record.id)"/>
+            </a-tooltip> 
+          </span>
+        </a-table>
+        <template>
+          <a-pagination :current="current" :total="pagenum" @change="onChange"/>
+        </template> 
+    </div>
+</template>
+<script>
+  const type = [
+    {
+      value:1,
+      name:'油品'
+    },{
+      value:2,
+      name:'非油'
+    }
+  ]
+    const columns = [
+        {
+          title: '订单编号',
+          dataIndex: 'num',
+        },
+        {
+          title: '交易时间',
+          dataIndex: 'time',
+        },
+        {
+          title: '消费类型',
+          dataIndex: 'type',
+        },
+        {
+          title: '实际金额',
+          dataIndex: 'pay',
+        },
+        {
+          title: '优惠金额',
+          dataIndex: 'coupon',
+        },
+        {
+          title: '合计',
+          dataIndex: 'all',
+        },
+        {
+          title: '操作',
+          key: 'actions',
+          dataIndex: 'actions',
+          scopedSlots: { customRender: 'actions' },
+    }];
+    const data = [
+        {
+            num:"2359876543",
+            time:'2019/05/20 15:00',
+            type:'油品',
+            pay:180.00,
+            coupon:20.00,
+            all:200.00
+        }
+    ]
+    export default {
+        data() {
+            return {
+                data:data,
+                columns,
+                pagenum:'',
+                current:1,
+                type,
+            }
+        },
+        methods: {
+            handleTimetypeChange(value) {
+              console.log(`时间类型 ${value}`);
+            },            
+            handleTypeChange(value) {
+              console.log(`消费类型 ${value}`);
+            },
+            onTimeChange(date, dateString) {
+              console.log('开始时间' +  dateString[0]);
+              console.log('结束时间' +  dateString[1]);
+            },
+            getCurrentStyle (current, today) {
+              const style = {}
+              if (current.date() === 1) {
+                style.border = '1px solid #1890ff'
+                style.borderRadius = '50%'
+              }
+              return style
+            }
+        }
+    }
+</script>
+<style scoped>
+.margin-bottom{
+	margin-bottom: 30px;
+}
+</style>

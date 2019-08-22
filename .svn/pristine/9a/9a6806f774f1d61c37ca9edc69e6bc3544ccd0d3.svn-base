@@ -1,0 +1,54 @@
+<template>
+    <div class="WidgetSeriesA">
+        <div class="seriesa-ul">
+            <vuescroll :ops="vueScrollOps">
+                <div class="seriesa-item" v-if="!datas || datas.upload == undefined" v-for="i in 4">
+                    <img :src="require('@/assets/images/designer-widget/default-image.png')"/>
+                </div>
+                <div class="seriesa-item" v-if="datas && datas.upload != undefined" v-for="item in datas.upload">
+                    <img :src="item.imageUrl"/>
+                </div>
+            </vuescroll>
+        </div>
+    </div>
+</template>
+
+<script>
+    import vuescroll from 'vuescroll';
+
+    export default {
+        title: '系列',
+        name: 'WidgetSeriesA',
+        visible: true,
+        category: 'Basic',
+        preview: require('@/assets/images/designer-widget/preview-seriesa.png'),
+        components: {
+            vuescroll: vuescroll
+        },
+        data() {
+            return {
+                vueScrollOps: {
+                    bar: {
+                        background: '#999',
+                        keepShow: true,
+                        size: '5px',
+                        minSize: 0.2
+                    },
+                }
+            }
+        },
+        fields: [
+            {
+                type: 'upload',
+                config: {
+                    colNum: 3,
+                    minNum: 4,
+                    maxNum: 20
+                }
+            }
+        ],
+        props: {
+            datas: Object
+        }
+    }
+</script>

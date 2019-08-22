@@ -1,0 +1,43 @@
+<template>
+    <div class="WidgetGoods" :style="{
+    marginTop:datas.setting ? datas.setting.marginTop+'px' : '5px',
+    marginBottom:datas.setting ? datas.setting.marginBottom+'px' : '5px',
+    paddingLeft: datas.setting ? datas.setting.marginLeft+'px' : '5px',
+    paddingRight:datas.setting ? datas.setting.marginRight+'px' : '5px',
+    backgroundColor:datas.setting ? datas.setting.columnBgColor : '#FFF'}">
+        <div class="WidgetHeader">
+            <span>{{datas.setting && datas.setting.columnTitle != '' ? datas.setting.columnTitle : '无标题'}}</span>
+            <a :href="datas.setting && datas.setting.moreUrl != '' ? datas.setting.moreUrl : '#'">更多<a-icon type="right" /></a>
+        </div>
+        <div :class="'WidgetGoods-goodsList' + (isEmpty ? ' Widget-skeleton' : '')">
+            <a-card hoverable v-for="index in Array(6).keys()">
+                <img slot="cover" :src="require('@/assets/images/designer-widget/widget-goods-default.png')" style="width: 110px;height: 110px;margin: 2px"/>
+                <a-card-meta title="商品名称">
+                    <template slot="description"><span>￥0.00</span><span>商品广告语</span></template>
+                </a-card-meta>
+            </a-card>
+        </div>
+    </div>
+</template>
+
+<script>
+    export default {
+        title: '商品列表',
+        name: 'WidgetGoods',
+        visible: false,
+        category: 'Goods',
+        preview: require('@/assets/images/designer-widget/preview-Goods.png'),
+        data() {
+          return {
+              isEmpty: true
+          }
+        },
+        props: {
+            goodsList: Array,
+            msg: String
+        },
+        created() {
+
+        }
+    }
+</script>

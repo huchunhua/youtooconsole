@@ -1,0 +1,16 @@
+import Vue from 'vue'
+import Vuex from 'vuex'
+import { store } from 'jsonschema-form-vue'
+
+Vue.use(Vuex)
+
+let stores = [];
+const storesContext = require.context('./modules', true, /\.js$/);
+storesContext.keys().forEach(module => {
+    let moduleName = module.replace('./','').replace('.js','');
+    stores[moduleName] = (storesContext(module).default || storesContext(module));
+});
+stores[store.name] = store;
+export default new Vuex.Store({
+    modules: stores
+})

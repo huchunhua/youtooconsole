@@ -1,0 +1,76 @@
+<template>
+    <div class="special-list">
+        <div class="special-item">
+            <div class="special-screenshot">
+                <img src="../../../assets/images/screenshot.jpg"/>
+            </div>
+            <strong>专题名称</strong>
+            <span>2019/06/05 17:45</span>
+        </div>
+        <div class="special-item">
+            <div class="special-screenshot">
+                <img src="../../../assets/images/screenshot.jpg"/>
+            </div>
+            <strong>专题名称</strong>
+            <span>2019/06/05 17:45</span>
+        </div>
+        <div class="special-item">
+            <div class="special-screenshot">
+                <img src="../../../assets/images/screenshot.jpg"/>
+            </div>
+            <strong>专题名称</strong>
+            <span>2019/06/05 17:45</span>
+        </div>
+        <div class="special-item">
+            <div class="special-screenshot">
+                <img src="../../../assets/images/screenshot.jpg"/>
+            </div>
+            <strong>专题名称</strong>
+            <span>2019/06/05 17:45</span>
+        </div>
+    </div>
+</template>
+
+<script>
+    export default {
+        name: "special",
+        data() {
+            return {}
+        },
+        created() {
+
+        },
+        methods: {}
+    }
+</script>
+
+<style scoped>
+    .special-item, .special-item strong, .special-item span {
+        display: block;
+    }
+    .special-item {
+        float: left;
+        text-align: center;
+        background: #ffffff;
+        box-shadow: 0px 0px 20px #ddd;
+        margin-right: 20px;
+    }
+    .special-item .special-screenshot {
+        width: 180px;
+        height: 270px;
+        overflow: hidden;
+    }
+    .special-item .special-screenshot img {
+        width: 100%;
+    }
+    .special-item strong {
+        font-size: 14px;
+        line-height: 16px;
+        padding-top: 10px;
+    }
+    .special-item span {
+        font-size: 12px;
+        line-height: 14px;
+        padding-bottom: 10px;
+    }
+</style>

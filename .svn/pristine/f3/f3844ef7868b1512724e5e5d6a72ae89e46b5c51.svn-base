@@ -1,0 +1,33 @@
+<template>
+    <div class="WidgetGoods">
+        <div :class="'WidgetGoods-goodsList' + (isEmpty ? ' Widget-skeleton' : '')">
+            <a-card hoverable v-for="index in Array(6).keys()">
+                <img slot="cover" :src="require('@/assets/images/designer-widget/widget-goods-default.png')" style="width: 110px;height: 110px;margin: 2px"/>
+                <a-card-meta title="商品名称">
+                    <template slot="description"><span>￥0.00</span><span>商品广告语</span></template>
+                </a-card-meta>
+            </a-card>
+        </div>
+    </div>
+</template>
+
+<script>
+    export default {
+        title: '商品列表',
+        name: 'WidgetGoods',
+        category: 'Goods',
+        preview: require('@/assets/images/designer-widget/preview-Goods.png'),
+        data() {
+          return {
+              isEmpty: true
+          }
+        },
+        props: {
+            goodsList: Array,
+            msg: String
+        },
+        created() {
+
+        }
+    }
+</script>

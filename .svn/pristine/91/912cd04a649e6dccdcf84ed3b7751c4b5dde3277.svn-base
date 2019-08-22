@@ -1,0 +1,37 @@
+<template>
+    <div class="WidgetNavigation">
+        <ul class="navigation-ul">
+            <li class="navigation-item" v-if="datas && datas.upload != undefined" v-for="item in datas.upload">
+                <img :src="item.imageUrl"/>
+                <span>{{item.urlText}}</span>
+            </li>
+            <li class="navigation-item" v-if="!datas || datas.upload == undefined" v-for="i in 8">
+                <a-icon type="picture" />
+                <span class="sample"/>
+            </li>
+        </ul>
+    </div>
+</template>
+
+<script>
+    export default {
+        title: '导航(金刚区)',
+        name: 'WidgetNavigation',
+        visible: true,
+        category: 'Basic',
+        preview: require('@/assets/images/designer-widget/preview-navigation.png'),
+        fields: [
+            {
+                type:'upload',
+                config: {
+                    colNum: 3,
+                    minNum: 4,
+                    maxNum: 16
+                }
+            }
+        ],
+        props: {
+            datas: Object
+        }
+    }
+</script>
